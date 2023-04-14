@@ -15,6 +15,7 @@ else:
     print("L:\n", np.around(L, decimals=3))
     print("U:\n:", np.around(U, decimals=3))
     print("P:\n", P)
+    # Проверка работы алгоритма: если произведения LU и PA получаются одинаковые, значит, функция работает верно
     if np.linalg.det(A) != 0.0 and A.shape[0] == A.shape[1]:
         k = L.dot(U)
         q = P.dot(A)
