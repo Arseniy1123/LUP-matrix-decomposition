@@ -4,7 +4,7 @@ import numpy as np
 def lup_decomposition(A):
     # Проверка определителя матрицы A на равенство нулю
     if np.linalg.det(A) == 0.0:
-        print("Error: A degenerate matrix is introduced. Please, enter a non-degenerate matrix!")
+        print("Error: A singular matrix is introduced. Please, enter a non-singular matrix!")
         return 0, 0, 0
     else:
         n = A.shape[0]
