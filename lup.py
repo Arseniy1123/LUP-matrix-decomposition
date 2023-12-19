@@ -1,27 +1,66 @@
-import numpy as np
-
-
 def lup_decomposition(A):
-    n = A.shape[0]
-    # Создание начальных матриц P и L с единичной диагональю
-    P = np.eye(n)
-    L = np.eye(n)
-    # Создание матрицы U как копии матрицы A
-    U = A.copy()
+    n = A.nrows()
+    U = A
+    P = identity_matrix(n)
+    L = identity_matrix(QQ, n)
+    
     for i in range(n):
-        # Нахождение максимального элемента в i-ом столбце
-        max_idx = np.argmax(np.abs(U[i:, i])) + i
-        # Проверка "главного" элемента - если он окажется равным нулю, то матрица вырождена  
-        if U[max_idx][i] == 0.0:
-            raise ValueError("Error: A singular matrix is introduced. Please, enter a non-singular matrix!")
-        # Если максимальный элемент не находится на диагонали, нужно поменять местами строки
-        if max_idx != i:
-            U[[i, max_idx]] = U[[max_idx, i]]
-            P[[i, max_idx]] = P[[max_idx, i]]
-            if i > 0:
-                L[[i, max_idx], :i] = L[[max_idx, i], :i]
-        # Вычисление множителя
+        p = 0
+        ind = -1
+        for row in range(i, n):
+            if abs(A[row, i]) > p:
+                p = abs(A[row, i])
+                ind = row
+                
+        if p == 0:
+            print('Матрица вырождена')
+            return 0
+        
+        P[[i, ind]] = P[[ind, i]]
+        U[[i, ind]] = U[[ind, i]]
         for j in range(i+1, n):
-            L[j, i] = U[j, i] / U[i, i]
-            U[j, i:] -= L[j, i] * U[i, i:]
+            U[j, i] /= U[i, i]
+            for k in range(i+1, n):
+                U[j, k] -= U[j, i] * U[i, k]
+    
+    for i in range(n):
+        for j in range(n):
+            if i > j:
+                L[i, j] = A[i, j]
+                U[i, j] = 0
+            else:
+                U[i, j] = A[i, j]
+                if i == j:
+                    L[i, j] = 1
+                else:
+                    L[i, j] = 0
+    
     return L, U, P
+
+
+A = matrix(QQ, [[2.0, 0.0, 2.0, 0.6], [3.0, 3.0, 4.0, -2.0], [5.0, 5.0, 4.0, 2.0], [-1.0, -2.0, 3.4, -1.0]])
+A1 = copy(A)
+n = A1.nrows()
+m = A1.ncols()
+if n != m:
+    print("Error: A non-square matrix is introduced. Please enter a square matrix!")
+else:
+    L, U, P = lup_decomposition(A1)
+    print("L:")
+    print(L)
+    print()
+    print("U:")
+    print(U)
+    print()
+    print("P:")
+    print(P)
+    print()
+    if A.det() != 0.0 and A.nrows() == A.ncols():
+        k = L * U 
+        q = P * A
+        print('P * A:')
+        print(q)
+        print()
+        print('L * U:')
+        print(k)
+        print()
